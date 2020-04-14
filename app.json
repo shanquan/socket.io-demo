@@ -1,0 +1,23 @@
+{
+  "name": "Socket-IO-DEMO",
+  "description": "my first socket.io app",
+  "website": "https://github.com/shanquan/socket.io-demo",
+  "repository": "https://github.com/shanquan/socket.io-demo",
+  "logo": "https://node-js-sample.herokuapp.com/node.svg",
+  "success_url": "/",
+  "keywords": [
+    "node",
+    "chat",
+    "socket.io",
+    "realtime",
+    "websocket"
+  ],
+  "scripts": {
+    "start": "node index.js"
+  },
+  "addons": [
+  ],
+  "env": {
+    "BUILDPACK_URL": "https://github.com/heroku/heroku-buildpack-nodejs"
+  }
+}

@@ -2,6 +2,8 @@
 
 Based examples from the official [socket.io examples](https://github.com/socketio/socket.io/tree/master/examples), for my own usecases.
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/shanquan/socket.io-demo)
+
 ## todo
 - audio and video binary file supports
 - filetransform and compression
@@ -31,6 +33,7 @@ Files in directory legacy are some based codes snippets, which do help for devel
 
 ## Ref sites
 - <https://github.com/socketio/socket.io>
+- <https://github.com/socketio/chat-example>
 - <https://github.com/socketio/socket.io-compression-demo>
 - <https://socketio-chat-example.now.sh>
 - <https://socket-io-whiteboard.now.sh/>
