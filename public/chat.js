@@ -9,7 +9,8 @@ var FADE_TIME = 150; // ms
   // Initialize variables
   var $usernameInput = document.querySelector('.usernameInput'); // Input for username
   var $messages = document.querySelector('.messages'); // Messages area
-  var $inputMessage = document.querySelector('.inputMessage'); // Input message input box
+  var $inputMessage = document.querySelector('input.inputMessage'); // Input message input box
+  var $voiceMessage = document.querySelector('button.inputMessage');// Voice message button
 
   var $loginPage = document.querySelector('.login.page'); // The login page
   var $chatPage = document.querySelector('.chat.page'); // The chatroom page
@@ -108,8 +109,14 @@ var FADE_TIME = 150; // ms
     $usernameDiv.innerText = data.username;
     var $messageBodyDiv = document.createElement("span");
     $messageBodyDiv.classList.add("messageBody");
-    if(data.message.substring(0,7)=="http://"||data.message.substring(0,8)=="https://"){
+    if(data.message.match("^https?://.*")){
       $messageBodyDiv.innerHTML = "<a target='_blank' href='"+data.message+"'>"+data.message+"</a>"
+    }else if(data.message.match("^audio:https?://.*")){
+      var src = data.message.substring(6);
+      $messageBodyDiv.innerHTML = '<audio controls="" autoplay="autoplay"><source src="'+src+'"></audio>'
+    }else if(data.message.match("^video:https?://.*")){
+      var src = data.message.substring(6);
+      $messageBodyDiv.innerHTML = '<video controls="" autoplay="autoplay" width="320"><source src="'+src+'" type="video/mp4"></video>';
     }else{
       // Use `innerText` Prevents input from having injected markup
       $messageBodyDiv.innerText = data.message;
@@ -254,6 +261,18 @@ var FADE_TIME = 150; // ms
     $inputMessage.focus();
   },false);
 
+  document.getElementById("inputType").addEventListener('click',function(){
+    if(this.src.indexOf("radio")!=-1){
+      this.src = "/svg/apps-outline.svg";
+      $inputMessage.style.display="none";
+      $voiceMessage.style.display="";
+    }else{
+      this.src = "/svg/radio-outline.svg";
+      $inputMessage.style.display="";
+      $inputMessage.focus();
+      $voiceMessage.style.display="none";
+    }
+  },false);
   // Socket events
 
   // Whenever the server emits 'login', log the login message

@@ -8,12 +8,13 @@ Available at <https://socket-io-demos.herokuapp.com/>
 
 ## todo
 - [x] disabled pulling to refresh
-- audio and video binary file supports
+- [x] audio and video links autoplay
   ```markdown
-  <video controls="" preload="none" width="320"><source src="http://mpvideo.qpic.cn/0bf2jaaawaaaxealua4kofpfasgdbneaacya.f10003.mp4?dis_k=c1cb2ccdbf9e3ce1fc92469cd08d960f&dis_t=1586855163" type="video/mp4"></video>
-  <audio controls="" preload="none"><source src="https://share-1252923336.cos.ap-guangzhou.myqcloud.com/audio/%E6%82%AF%E5%86%9C.mp3"></audio>
+  <video controls="" autoplay="autoplay" width="320"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/video/sunshine.mp4" type="video/mp4"></video>
+  <audio controls="" autoplay="autoplay"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/audio/%E6%82%AF%E5%86%9C.mp3"></audio>
   ```
-- filetransform and compression
+- [ ] filetransform and compression with CDN
+- [ ] voice message
 - maybe some webRTC support, or just get research into Rocket.Chat project
 
 ## Difference
