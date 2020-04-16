@@ -232,6 +232,9 @@ var FADE_TIME = 150; // ms
     }
   },false);
 
+  // disable default pulling to refresh
+  document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });
+
   $inputMessage.addEventListener('input', function() {
     updateTyping();
   },false);

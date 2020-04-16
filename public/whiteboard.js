@@ -61,6 +61,7 @@
     drawing = true;
     current.x = e.clientX||e.touches[0].clientX;
     current.y = e.clientY||e.touches[0].clientY;
+    e.preventDefault();
   }
 
   function onMouseUp(e){

@@ -4,8 +4,15 @@ Based examples from the official [socket.io examples](https://github.com/socketi
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/shanquan/socket.io-demo)
 
+Available at <https://socket-io-demos.herokuapp.com/>
+
 ## todo
+- [x] disabled pulling to refresh
 - audio and video binary file supports
+  ```markdown
+  <video controls="" preload="none" width="320"><source src="http://mpvideo.qpic.cn/0bf2jaaawaaaxealua4kofpfasgdbneaacya.f10003.mp4?dis_k=c1cb2ccdbf9e3ce1fc92469cd08d960f&dis_t=1586855163" type="video/mp4"></video>
+  <audio controls="" preload="none"><source src="https://share-1252923336.cos.ap-guangzhou.myqcloud.com/audio/%E6%82%AF%E5%86%9C.mp3"></audio>
+  ```
 - filetransform and compression
 - maybe some webRTC support, or just get research into Rocket.Chat project
 
@@ -18,6 +25,12 @@ It also supports noname login.
 
 ### whiteboard
 Add current color style and color input.
+
+### disabled pulling to refresh notes
+1. `meta viewport` add `user-scalable=no`, not working
+2. `html,body` add `css`:`touch-action:none`, `index.html` and `chat.html login` pages pulling are disabled
+3. Add `e.preventDefault()` in `onMouseDown` function of `whiteboard.js`, disable whiteboard page pulling
+4. Add `document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });` in `chat.js`, disable chat page pulling, notice can't replace `touchmove` with `touchstart` here, because with `touchstart` the buttons and a-links will also be disabled. 
 
 ## How to run
 ```bash
@@ -37,4 +50,3 @@ Files in directory legacy are some based codes snippets, which do help for devel
 - <https://github.com/socketio/socket.io-compression-demo>
 - <https://socketio-chat-example.now.sh>
 - <https://socket-io-whiteboard.now.sh/>
-
