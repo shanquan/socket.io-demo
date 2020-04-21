@@ -16,6 +16,8 @@ exports.types = {
     "wav": "audio/x-wav",
     "wma": "audio/x-ms-wma",
     "wmv": "video/x-ms-wmv",
+    "mp3": "audio/mpeg",
+    "mp4": "video/mp4",
     "xml": "text/xml",
     //"apk": "application/vnd.android.package-archive",
     // download

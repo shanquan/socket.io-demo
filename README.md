@@ -13,6 +13,7 @@ Available at <https://socket-io-demos.herokuapp.com/>
   <video controls="" autoplay="autoplay" width="320"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/video/sunshine.mp4" type="video/mp4"></video>
   <audio controls="" autoplay="autoplay"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/audio/%E6%82%AF%E5%86%9C.mp3"></audio>
   ```
+- [x] add polyfills to support legacy browser
 - [ ] filetransform and compression with CDN
 - [ ] voice message
 - maybe some webRTC support, or just get research into Rocket.Chat project
@@ -32,6 +33,34 @@ Add current color style and color input.
 2. `html,body` add `css`:`touch-action:none`, `index.html` and `chat.html login` pages pulling are disabled
 3. Add `e.preventDefault()` in `onMouseDown` function of `whiteboard.js`, disable whiteboard page pulling
 4. Add `document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });` in `chat.js`, disable chat page pulling, notice can't replace `touchmove` with `touchstart` here, because with `touchstart` the buttons and a-links will also be disabled. 
+
+### add polyfill for HTMLElement prepend and append
+```js
+ if(!HTMLElement.prototype.append){
+    // HTMLElement.prototype.append = HTMLElement.prototype.appendChild;
+    HTMLElement.prototype.append = function(){
+      for(var i=0;i < arguments.length;i++){
+        if(arguments[i] instanceof HTMLElement){
+          this.appendChild(arguments[i]);
+        }
+      }
+    };
+  }
+
+  if(!HTMLElement.prototype.prepend){
+    HTMLElement.prototype.prepend = function(){
+      for(var i=0;i < arguments.length;i++){
+        if(arguments[i] instanceof HTMLElement){
+          if(this.hasChildNodes()){
+            this.insertBefore(arguments[i],this.firstChild);
+          }else{
+            this.appendChild(arguments[i]);
+          }
+        }
+      }
+    };
+  }
+```
 
 ## How to run
 ```bash

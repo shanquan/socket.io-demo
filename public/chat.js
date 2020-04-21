@@ -24,6 +24,33 @@ var FADE_TIME = 150; // ms
 
   var socket = io();
 
+// Polyfill
+  if(!HTMLElement.prototype.append){
+    // HTMLElement.prototype.append = HTMLElement.prototype.appendChild;
+    HTMLElement.prototype.append = function(){
+      for(var i=0;i < arguments.length;i++){
+        if(arguments[i] instanceof HTMLElement){
+          this.appendChild(arguments[i]);
+        }
+      }
+    };
+  }
+
+  if(!HTMLElement.prototype.prepend){
+    HTMLElement.prototype.prepend = function(){
+      for(var i=0;i < arguments.length;i++){
+        if(arguments[i] instanceof HTMLElement){
+          if(this.hasChildNodes()){
+            this.insertBefore(arguments[i],this.firstChild);
+          }else{
+            this.appendChild(arguments[i]);
+          }
+        }
+      }
+    };
+  }
+
+
   function addParticipantsMessage (data) {
     var message = '';
     if (data.numUsers === 1) {
@@ -46,13 +73,14 @@ var FADE_TIME = 150; // ms
       range = Math.round(Math.random() * (max-min)) + min;
     }
     for(var i=0; i<range; i++){
-      pos = Math.round(Math.random() * (arr.length-1));
+      var pos = Math.round(Math.random() * (arr.length-1));
       str += arr[pos];
     }
     return str;
   }
   // Sets the client's username
   function setUsername () {
+    try{
     username = $usernameInput.value.trim();
 
     // If the username is valid
@@ -65,6 +93,9 @@ var FADE_TIME = 150; // ms
 
       // Tell the server your username
       socket.emit('add user', username);
+    }catch(e){
+      console.log(e.toString());
+    }
   }
 
   // Sends a chat message
@@ -130,7 +161,6 @@ var FADE_TIME = 150; // ms
       $messageDiv.classList.add(typingClass);
     }
     $messageDiv.append($usernameDiv, $messageBodyDiv);
-
     addMessageElement($messageDiv, options);
   }
 
@@ -143,7 +173,7 @@ var FADE_TIME = 150; // ms
 
   // Removes the visual chat typing message
   function removeChatTyping (data) {
-    let $el = getTypingMessages(data);
+    var $el = getTypingMessages(data);
     $el.forEach(function(i){
       i.parentNode.removeChild(i);
     })
@@ -174,9 +204,9 @@ var FADE_TIME = 150; // ms
       $el.style.display="none";
     }
     if (options.prepend) {
-      $messages.prepend($el);
+        $messages.prepend($el);
     } else {
-      $messages.append($el);
+        $messages.append($el);
     }
     $messages.scrollTop = $messages.scrollHeight;
   }
@@ -203,9 +233,14 @@ var FADE_TIME = 150; // ms
 
   // Gets the 'X is typing' messages of a user
   function getTypingMessages (data) {
-    return Array.from(document.querySelectorAll('.typing.message')).filter(function (i) {
-      return i.getAttribute("data-username") === data.username;
-    });
+    var arr=[];
+    var mesels = document.querySelectorAll('.typing.message');
+    for (var i = 0; i < mesels.length; i++) {
+      if(mesels[i].getAttribute("data-username") === data.username){
+        arr.push(mesels[i]);
+      }
+    }
+    return arr;
   }
 
   // Gets the color of a username through our hash function
