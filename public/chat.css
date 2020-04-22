@@ -149,8 +149,11 @@
   }
   .inputMessage {
     outline: none;
-    display: flex;
     width:100%;
+    /* display: flex;*/
+    right: 48px;
+    height: 48px;
+    left: 48px;
   }
   button.inputMessage{background-color: #eee;justify-content:center}
   .btnLogin{margin-top:10px;padding: 5px 15px;}
