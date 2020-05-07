@@ -21,22 +21,22 @@ var server = http.createServer(function (req, res) {
     ext = ext ? ext.slice(1) : 'unknown';
     if(ext=="unknown") realPath+=".html";
     var contentType = mime[ext] || "text/html";
-    fs.readFile(realPath, function (err, data) {
-      // fs.readFile(file, 'utf8', callback) can also be used
-      if(err){
-        console.log(err);
-        res.writeHead(404,{'Content-Type':'text/plain;charset=UFT8'});
-        res.end("");
+    // use pipe insteadof readFile
+    try{
+      var stat = fs.statSync(realPath);
+      if(ext=="apk"){
+        // for download
+        res.writeHead(200,{'Content-type': contentType,"Content-Disposition":'attachment;filename="'+pathname.substring(1)+'"'});
       }else{
-        if(ext=="apk"){
-          // for download
-          res.writeHead(200,{'Content-type': contentType,"Content-Disposition":'attachment;filename="'+pathname.substring(1)+'"'});
-        }else{
-          res.writeHead(200, { 'Content-type': contentType });
-        }
-        res.end(data);
+        res.writeHead(200, { 'Content-type': contentType });
       }
-    })
+      var readStream = fs.createReadStream(realPath);
+      readStream.pipe(res);
+    }catch(err){
+      console.log(err.toString());
+      res.writeHead(404,{'Content-Type':'text/plain;charset=UFT8'});
+      res.end("");
+    }
 }).listen(port, function () {
     console.log('listening on *:' + port);
 });

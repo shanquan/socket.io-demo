@@ -8,11 +8,13 @@ Available at <https://socket-io-demos.herokuapp.com/>
 
 ## todo
 - [x] disabled pulling to refresh
-- [x] audio and video links autoplay
+- [x] image\audio and video links autoplay
   ```markdown
   <video controls="" autoplay="autoplay" width="320"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/video/sunshine.mp4" type="video/mp4"></video>
   <audio controls="" autoplay="autoplay"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/audio/%E6%82%AF%E5%86%9C.mp3"></audio>
   ```
+- [x] svg use
+- [x] add send button
 - [x] add polyfills to support legacy browser
 - [ ] filetransform and compression with CDN
 - [ ] voice message

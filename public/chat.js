@@ -148,6 +148,9 @@ var FADE_TIME = 150; // ms
     }else if(data.message.match("^video:https?://.*")){
       var src = data.message.substring(6);
       $messageBodyDiv.innerHTML = '<video controls="" autoplay="autoplay" width="320"><source src="'+src+'" type="video/mp4"></video>';
+    }else if(data.message.match("^image:https?://.*")){
+      var src = data.message.substring(6);
+      $messageBodyDiv.innerHTML = '<image src="'+src+'" width="320"/>';
     }else{
       // Use `innerText` Prevents input from having injected markup
       $messageBodyDiv.innerText = data.message;
@@ -273,11 +276,27 @@ var FADE_TIME = 150; // ms
       }
     }
   },false);
+  // send Message
+  document.getElementsByName('send')[1].addEventListener('click',function(){
+    sendMessage();
+    socket.emit('stop typing');
+    typing = false;
+    $currentInput.focus();
+    document.getElementsByName("send")[0].classList.remove('hide');
+    document.getElementsByName("send")[1].classList.add('hide');
+  },false)
 
   // disable default pulling to refresh
   document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });
 
-  $inputMessage.addEventListener('input', function() {
+  $inputMessage.addEventListener('input', function(e) {
+    if(e.target.value){
+      document.getElementsByName("send")[0].classList.add('hide');
+      document.getElementsByName("send")[1].classList.remove('hide');
+    }else{
+      document.getElementsByName("send")[0].classList.remove('hide');
+      document.getElementsByName("send")[1].classList.add('hide');
+    }
     updateTyping();
   },false);
 
@@ -297,12 +316,13 @@ var FADE_TIME = 150; // ms
   },false);
 
   document.getElementById("inputType").addEventListener('click',function(){
-    if(this.src.indexOf("radio")!=-1){
-      this.src = "/svg/apps-outline.svg";
+    var usenode = this.firstElementChild;
+    if(usenode.getAttribute('xlink:href').indexOf("radio")!=-1){
+      usenode.setAttribute('xlink:href','#apps-outline');
       $inputMessage.style.display="none";
       $voiceMessage.style.display="";
     }else{
-      this.src = "/svg/radio-outline.svg";
+      usenode.setAttribute('xlink:href','#radio-outline');
       $inputMessage.style.display="";
       $inputMessage.focus();
       $voiceMessage.style.display="none";

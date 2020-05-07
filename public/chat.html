@@ -13,10 +13,18 @@
         <ul class="messages"></ul>
       </div>
       <div class="inputArea">
-        <img class="icon" id="inputType" src="/svg/radio-outline.svg">
+        <!-- <img class="icon" id="inputType" src="/svg/icon.svg#radio-outline"> -->
+        <svg class="icon" id="inputType">
+          <use xlink:href="#radio-outline"></use>
+        </svg>
         <input class="inputMessage" placeholder="Type here..."/>
         <button class="inputMessage" style="display: none;">按住 说话</button>
-        <img class="icon" src="/svg/add-circle-outline.svg">
+        <svg class="icon" name="send">
+          <use xlink:href="#add-circle-outline"></use>
+        </svg>
+        <svg class="icon hide" name="send">
+          <use xlink:href="#paper-plane-outline"></use>
+        </svg>
       </div>
     </li>
     <li class="login page">
@@ -30,5 +38,39 @@
   </ul>
   <script src="/socket.io/socket.io.js"></script>
   <script src="chat.js"></script>
+  <svg class="hide">
+    <style>
+      .ionicon {
+        fill: currentColor;
+        stroke: currentColor;
+      }
+      .ionicon-fill-none {
+        fill: none;
+      }
+      .ionicon-stroke-width {
+        stroke-width: 32px;
+      }
+      </style>
+    <defs>
+      <symbol id="add-circle-outline" class=ionicon viewBox="0 0 512 512"><path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z"
+        stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></path><path stroke-linecap=round stroke-linejoin=round
+        d="M256 176v160M336 256H176" class="ionicon-fill-none ionicon-stroke-width"></path></symbol>
+        <symbol id="apps-outline" class=ionicon viewBox="0 0 512 512"><rect x=64 y=64 width=80 height=80 rx=40
+          ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect x=216 y=64
+          width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=368 y=64 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=64 y=216 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=216 y=216 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=368 y=216 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=64 y=368 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=216 y=368 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
+          x=368 y=368 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect></symbol>
+          <symbol id="radio-outline" class=ionicon viewBox="0 0 512 512"><circle cx=256 cy=256.02 r=32></circle><path
+            d="M184.25 192.25a96 96 0 000 127.52M327.77 319.77a96 96 0 000-127.52M133.28 141.28a168 168 0 000 229.44M378.72 370.72a168 168 0 000-229.44M435 416a240.34 240.34 0 000-320M77 96a240.34 240.34 0 000 320"
+            stroke-linecap=round stroke-linejoin=round class="ionicon-fill-none ionicon-stroke-width"></path></symbol>
+            <symbol id="paper-plane-outline" class=ionicon viewBox="0 0 512 512"><path d="M53.12 199.94l400-151.39a8 8 0 0110.33 10.33l-151.39 400a8 8 0 01-15-.34l-67.4-166.09a16 16 0 00-10.11-10.11L53.46 215a8 8 0 01-.34-15.06zM460 52L227 285"
+              stroke-linecap=round stroke-linejoin=round class="ionicon-fill-none ionicon-stroke-width"></path></symbol>
+    </defs>
+    </svg>
 </body>
 </html>
