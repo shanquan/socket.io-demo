@@ -9,7 +9,7 @@ var FADE_TIME = 150; // ms
   // Initialize variables
   var $usernameInput = document.querySelector('.usernameInput'); // Input for username
   var $messages = document.querySelector('.messages'); // Messages area
-  var $inputMessage = document.querySelector('input.inputMessage'); // Input message input box
+  var $inputMessage = document.querySelector('div.inputMessage'); // message input box
   var $voiceMessage = document.querySelector('button.inputMessage');// Voice message button
 
   var $loginPage = document.querySelector('.login.page'); // The login page
@@ -100,11 +100,13 @@ var FADE_TIME = 150; // ms
 
   // Sends a chat message
   function sendMessage () {
-    var message = $inputMessage.value;
+    var message = $inputMessage.innerText;
     // Prevent markup from being injected into the message
     // if there is a non-empty message and a socket connection
     if (message && connected) {
-      $inputMessage.value="";
+      $inputMessage.innerText="";
+      document.getElementsByName("send")[0].classList.remove('hide');
+      document.getElementsByName("send")[1].classList.add('hide');
       addChatMessage({
         username: username,
         message: message
@@ -267,11 +269,11 @@ var FADE_TIME = 150; // ms
     // When the client hits ENTER on their keyboard
     var code = event.keyCode || event.charCode || event.which;
     if (code === 13) {
-      if (username) {
+      if (username && event.ctrlKey) {
         sendMessage();
         socket.emit('stop typing');
         typing = false;
-      } else {
+      } else if(!username){
         setUsername();
       }
     }
@@ -290,7 +292,7 @@ var FADE_TIME = 150; // ms
   document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });
 
   $inputMessage.addEventListener('input', function(e) {
-    if(e.target.value){
+    if(e.target.innerHTML){
       document.getElementsByName("send")[0].classList.add('hide');
       document.getElementsByName("send")[1].classList.remove('hide');
     }else{

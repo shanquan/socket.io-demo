@@ -147,11 +147,11 @@
     font-size: 100%;
     outline: none;
     width:100%;
-    /* display: flex;*/
     right: 48px;
     height: 48px;
     left: 48px;
   }
+  /*ref:http://www.xuanfengge.com/demo/201308/textarea/demo1.html */
   div.inputMessage {
     margin-left: auto;
     margin-right: auto;
@@ -172,3 +172,4 @@
   ref: https://codepen.io/chriscoyier/pen/GndhE
   https://codepen.io/chriscoyier/pen/EBHlD?editors=1111*/
   .hide{display:none}
+  .messageBody{display: inline-block;}

@@ -30,6 +30,12 @@ The source sample uses express and Jquery, This hasn't. Just dependant on socket
 
 It also supports noname login, image\audio and video links autoplay, barcode-auto generated( with service from [BarcodeTools](http://generator.barcodetools.com/)), user list(to be done).
 
+sample input:
+- http://www.baidu.com
+- image:https://www.bing.com/th?id=OHR.RhodesIsland_ZH-CN0674840850_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=HpEdgeAn
+- audio:http://
+- video:http://
+
 ### whiteboard
 Add current color style and color input.
 
