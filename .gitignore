@@ -1,3 +1,4 @@
 node_modules
 package-lock.json
 public/svg/icons.svg
+public/svg/icon.svg

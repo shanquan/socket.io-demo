@@ -1,6 +1,6 @@
 # socket.io-demo
 
-Based examples from the official [socket.io examples](https://github.com/socketio/socket.io/tree/master/examples), for my own usecases.
+Based examples from the official [socket.io examples](https://github.com/socketio/socket.io/tree/master/examples), for my own use.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/shanquan/socket.io-demo)
 
@@ -16,16 +16,19 @@ Available at <https://socket-io-demos.herokuapp.com/>
 - [x] svg use
 - [x] add send button
 - [x] add polyfills to support legacy browser
+- [ ] add user list
+- [ ] support multi-line and markdown texts
 - [ ] filetransform and compression with CDN
 - [ ] voice message
-- maybe some webRTC support, or just get research into Rocket.Chat project
+- [ ] 
+- maybe some webRTC support, or just get research into Rocket.Chat project or Skype
 
 ## Difference
 
 ### chat example
-The source sample uses express and Jquery, This hasn't. Just dependant on only socketio. Also it supports Mobile browser and messages of links(starts with http:// or https://) better.
+The source sample uses express and Jquery, This hasn't. Just dependant on socketio. besides it supports Mobile browser and messages of links(starts with http:// or https://) better.
 
-It also supports noname login.
+It also supports noname login, image\audio and video links autoplay, barcode-auto generated( with service from [BarcodeTools](http://generator.barcodetools.com/)), user list(to be done).
 
 ### whiteboard
 Add current color style and color input.
@@ -34,9 +37,11 @@ Add current color style and color input.
 1. `meta viewport` add `user-scalable=no`, not working
 2. `html,body` add `css`:`touch-action:none`, `index.html` and `chat.html login` pages pulling are disabled
 3. Add `e.preventDefault()` in `onMouseDown` function of `whiteboard.js`, disable whiteboard page pulling
-4. Add `document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });` in `chat.js`, disable chat page pulling, notice can't replace `touchmove` with `touchstart` here, because with `touchstart` the buttons and a-links will also be disabled. 
+4. Add `document.querySelector(".chatArea").addEventListener('touchmove', function(e){e.preventDefault();},  { passive: false });` in `chat.js`, disable chat page pulling, notice can't replace `touchmove` with `touchstart` here, because with `touchstart` the buttons and tag-a links will also be disabled. 
 
 ### add polyfill for HTMLElement prepend and append
+
+other polyfills(ie findIndex polyfill) ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 ```js
  if(!HTMLElement.prototype.append){
     // HTMLElement.prototype.append = HTMLElement.prototype.appendChild;
@@ -71,7 +76,7 @@ node index.js [Static Directory]
 # for example: node index.js D:/mm/PDA
 ```
 
-PS: this script failed on Android Termux with node v12.16.1, because of some unknown error from `socket.io`, while works fine on PC node v12.16.1.
+PS: this script failed on Android [Termux](https://termux.com/) with node v12.16.1, because of some unknown error from `socket.io`, while works fine on PC node v12.16.1.
 
 ## legacy
 Files in directory legacy are some based codes snippets, which do help for developing. run `node app.js` to start.

@@ -19,7 +19,17 @@ var server = http.createServer(function (req, res) {
     realPath = path.join(realPath, path.normalize(pathname.replace(/\.\./g, "")));
     var ext = path.extname(realPath);
     ext = ext ? ext.slice(1) : 'unknown';
-    if(ext=="unknown") realPath+=".html";
+    if(ext=="unknown"){
+      try{
+        if(fs.statSync(realPath).isDirectory()){
+          //redirect to req.url+"/",以支持baseURL
+          res.writeHead(301, {'Location': req.url+"/"});
+          res.end();
+        }
+      }catch(e){
+        realPath += ".html";
+      }
+    }
     var contentType = mime[ext] || "text/html";
     // use pipe insteadof readFile
     try{
@@ -31,7 +41,9 @@ var server = http.createServer(function (req, res) {
         res.writeHead(200, { 'Content-type': contentType });
       }
       var readStream = fs.createReadStream(realPath);
-      readStream.pipe(res);
+      readStream.pipe(res).once('close', function () {
+        readStream.destroy();
+      });
     }catch(err){
       console.log(err.toString());
       res.writeHead(404,{'Content-Type':'text/plain;charset=UFT8'});
