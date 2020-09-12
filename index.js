@@ -94,7 +94,7 @@ nsp.on('connection', socket => {
       if (err) {
           socket.emit('new message', {
             username: socket.username,
-            message: 'upload Error:'+JSON.stringify(err)
+            message: 'upload Error:'+JSON.stringify(err)+';'+__dirname
           });
       }
       var url='http://'+socket.handshake.headers.host+'/assets/'+data.name;
