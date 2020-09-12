@@ -3,20 +3,40 @@
 var fs = require('fs')
     , http = require('http')
     , socketio = require('socket.io');
+const { config } = require('process');
 var mime = require("./mime").types
     , url = require("url")
     , path = require("path");
 
 var port = process.env.PORT || 808;
+const KEY="3345",PRIVATENS="5432";
 // static server
 var server = http.createServer(function (req, res) {
-  var pathname = url.parse(req.url).pathname;
-    if (pathname.slice(-1) === "/") {
-        pathname = pathname + "index.html";
+  var urlObj = url.parse(req.url,true);
+  var pathname = urlObj.pathname;
+  if (pathname.slice(-1) === "/") {
+      pathname = pathname + "index.html";
+  }
+  if(pathname.startsWith('/api/')){
+    var method = pathname.substring(5);
+    var body = {
+      result: "fail",
+      data: "not available"
     }
+    switch(method){
+      case 'checkUser': 
+        if(urlObj.query.name.startsWith(KEY)){
+          body.result = "ok";
+          body.data = PRIVATENS;
+          body.key = KEY;
+        }
+        res.end(JSON.stringify(body));
+        return;
+    }
+  }
     // 添加static Directory参数
     var realPath = process.argv[2] || "public";
-    realPath = path.join(realPath, path.normalize(pathname.replace(/\.\./g, "")));
+    realPath = path.join(realPath, decodeURI(path.normalize(pathname.replace(/\.\./g, ""))));
     var ext = path.extname(realPath);
     ext = ext ? ext.slice(1) : 'unknown';
     if(ext=="unknown"){
@@ -27,7 +47,7 @@ var server = http.createServer(function (req, res) {
           res.end();
         }
       }catch(e){
-        realPath += ".html";
+          realPath += ".html";
       }
     }
     var contentType = mime[ext] || "text/html";
@@ -53,11 +73,60 @@ var server = http.createServer(function (req, res) {
     console.log('listening on *:' + port);
 });
 
-var numUsers = 0;
+var dbModel = {
+  numUsers:0,
+  users:[]
+};
+var nsList = {
+  'default': dbModel,
+  'private': {
+    numUsers:0,
+    users:[]
+  }
+}
 
 var io = socketio.listen(server);
+const nsp = io.of('/'+PRIVATENS);
+nsp.on('connection', socket => {
+  commonChat(socket,'private');
+  // support file sharing
+  socket.on('file', function(data){
+    fs.writeFile('./public/assets/'+data.name, data.buffer, function(err) {
+      if (err) {
+          throw err;
+      }
+      var url='http://'+socket.handshake.headers.host+'/assets/'+data.name;
+      if(data.type.startsWith('image/')){
+        url = "image:"+url;
+      }else if(data.type.startsWith('audio/')){
+        url = "audio:"+url;
+      }else if(data.type.startsWith('video/')){
+        url = "video:"+url;
+      }
+      socket.emit('new message', {
+        username: socket.username,
+        message: url
+      });
+      // saved only for 24 hours, or clear assets dir with fs.rmdir every day at 00:00
+      setTimeout(function(){
+        fs.unlink('./public/assets/'+data.name,function(err){
+          if(err){
+            console.log(err);
+          }
+        })
+      },24*3600*1000)
+    })
+  });
+});
+
 io.on('connection', function (socket) {
-    var addedUser = false;
+  commonChat(socket,'default');
+  // whiteboard
+  socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
+});
+
+function commonChat(socket,tag){
+  var addedUser = false;
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', (data) => {
@@ -71,18 +140,19 @@ io.on('connection', function (socket) {
   // when the client emits 'add user', this listens and executes
   socket.on('add user', (username) => {
     if (addedUser) return;
-
     // we store the username in the socket session for this client
     socket.username = username;
-    ++numUsers;
+    ++nsList[tag].numUsers;
     addedUser = true;
+    nsList[tag].users.push(username);
     socket.emit('login', {
-      numUsers: numUsers
+      users: nsList[tag].users,
+      numUsers: nsList[tag].numUsers
     });
     // echo globally (all clients) that a person has connected
     socket.broadcast.emit('user joined', {
       username: socket.username,
-      numUsers: numUsers
+      numUsers: nsList[tag].numUsers
     });
   });
 
@@ -103,16 +173,16 @@ io.on('connection', function (socket) {
   // when the user disconnects.. perform this
   socket.on('disconnect', () => {
     if (addedUser) {
-      --numUsers;
-
+      --nsList[tag].numUsers;
+      var idx = nsList[tag].users.indexOf(socket.username);
+      if(idx!=-1){
+        nsList[tag].users.splice(idx,1);
+      }
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
         username: socket.username,
-        numUsers: numUsers
+        numUsers: nsList[tag].numUsers
       });
     }
   });
-
-  // whiteboard
-  socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
-});
+}

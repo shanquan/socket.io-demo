@@ -13,14 +13,16 @@ Available at <https://socket-io-demos.herokuapp.com/>
   <video controls="" autoplay="autoplay" width="320"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/video/sunshine.mp4" type="video/mp4"></video>
   <audio controls="" autoplay="autoplay"><source src="https://share-xxx.cos.ap-guangzhou.myqcloud.com/audio/%E6%82%AF%E5%86%9C.mp3"></audio>
   ```
-- [x] svg use
+- [x] use svg
 - [x] add send button
 - [x] add polyfills to support legacy browser
-- [ ] add user list
-- [ ] support multi-line and markdown texts
-- [ ] filetransform and compression with CDN
+- [x] add user list,log list and files list
+- [x] support multi-line and markdown(not yet) texts
+- [x] support a private namespace
+- [x] add datetime and download
+- [x] support private room with a unique password
+- [x] filetransform with websocket only in private namespace and files saved only for 24hours
 - [ ] voice message
-- [ ] 
 - maybe some webRTC support, or just get research into Rocket.Chat project or Skype
 
 ## Difference
@@ -28,7 +30,7 @@ Available at <https://socket-io-demos.herokuapp.com/>
 ### chat example
 The source sample uses express and Jquery, This hasn't. Just dependant on socketio. besides it supports Mobile browser and messages of links(starts with http:// or https://) better.
 
-It also supports noname login, image\audio and video links autoplay, barcode-auto generated( with service from [BarcodeTools](http://generator.barcodetools.com/)), user list(to be done).
+It also supports noname login, image\audio and video links autoplay, barcode-auto generated( with service from [BarcodeTools](http://generator.barcodetools.com/)).
 
 sample input:
 - http://www.baidu.com
@@ -93,3 +95,4 @@ Files in directory legacy are some based codes snippets, which do help for devel
 - <https://github.com/socketio/socket.io-compression-demo>
 - <https://socketio-chat-example.now.sh>
 - <https://socket-io-whiteboard.now.sh/>
+- <https://socket.io/blog/introducing-socket-io-1-0/#Binary-support>

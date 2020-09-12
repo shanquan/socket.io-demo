@@ -22,5 +22,7 @@ exports.types = {
     //"apk": "application/vnd.android.package-archive",
     // download
     "apk": "application/octet-stream",
+    "zip": "application/x-zip-compressed",
+    "bin": "application/octet-stream",
     "unknown": "text/html"
 };

@@ -46,7 +46,22 @@
     position: absolute;
     width: 100%;
   }
-  
+  .side{display:none;
+    justify-content: center;
+    align-items: center;right:0;}
+  .flex-item{flex:1;
+    width:100%;
+    overflow-y: scroll;
+    padding: 10px 20px 10px 20px;
+    border:1px solid #ccc
+  }
+  .direction-column {
+      flex-direction: column
+  }
+  @media (min-width:768px){
+    .page.chat{width:70%;}
+    .page.side{width:30%;display:flex;}
+  }
   /* Login Page */
   
   .login.page {
@@ -173,3 +188,10 @@
   https://codepen.io/chriscoyier/pen/EBHlD?editors=1111*/
   .hide{display:none}
   .messageBody{display: inline-block;}
+  .members ul,.files ul{
+    margin:0;padding:0;list-style: circle;
+  }
+  .i{width:32px;height:32px;color:#444;}
+ .toolbar{position:absolute;right:20px;}
+ .center{text-align:center}
+ input[type='file']{opacity: 0;width: 40px;height: 48px;position: absolute;right: 0;}

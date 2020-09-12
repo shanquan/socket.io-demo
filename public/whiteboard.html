@@ -8,16 +8,44 @@
 </head>
 <body>
   <canvas class="whiteboard" ></canvas>
-
   <div class="colors">
     <input class="color" type="color" style="position:relative;top:-5px"/>
     <div class="color blue"></div>
     <div class="color red"></div>
     <div class="color green"></div>
     <div class="color yellow"></div>
+    <svg class="i">
+      <use xlink:href="#download"></use>
+    </svg>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="whiteboard.js"></script>
+  <svg class="hide">
+    <style>
+      .ionicon {
+        fill: currentColor;
+        stroke: currentColor;
+      }
+      .ionicon-fill-none {
+        fill: none;
+      }
+      .ionicon-stroke-width {
+        stroke-width: 32px;
+      }
+      </style>
+    <defs>
+        <symbol id="download" class=ionicon viewBox="0 0 512 512">
+          <g>
+            <g>
+              <polygon points="288,144 288,160 400,160 400,432 112,432 112,160 224,160 224,144 96,144 96,448 416,448 416,144 		"/>
+            </g>
+            <g>
+              <polygon points="193.1,252.3 181.5,263.9 256,338.4 330.5,263.9 318.9,252.3 264.2,307 264.2,64 247.8,64 247.8,307 		"/>
+            </g>
+          </g>
+        </symbol>
+    </defs>
+    </svg>
 </body>
 </html>

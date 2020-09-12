@@ -14,6 +14,10 @@ var FADE_TIME = 150; // ms
 
   var $loginPage = document.querySelector('.login.page'); // The login page
   var $chatPage = document.querySelector('.chat.page'); // The chatroom page
+  var $sidePage = document.querySelector('.side.page'); 
+  var $logsDiv = document.querySelector('.logs');
+  var $members = document.querySelector('.members ul');
+  var $filesDiv = document.querySelector('.files');
 
   // Prompt for setting a username
   var username;
@@ -21,8 +25,9 @@ var FADE_TIME = 150; // ms
   var typing = false;
   var lastTypingTime;
   var $currentInput = document.querySelector('.inputMessage');
+  var $msgTime;
 
-  var socket = io();
+  var socket;
 
 // Polyfill
   if(!HTMLElement.prototype.append){
@@ -52,13 +57,12 @@ var FADE_TIME = 150; // ms
 
 
   function addParticipantsMessage (data) {
-    var message = '';
+    var membersSum = document.querySelector('.members div');
     if (data.numUsers === 1) {
-      message += "there's 1 participant";
+      membersSum.innerHTML = "there's 1 participant";
     } else {
-      message += "there are " + data.numUsers + " participants";
+      membersSum.innerHTML = "there are " + data.numUsers + " participants";
     }
-    log(message);
   }
   /**
    ** generateRandom 产生任意长度随机字母数字组合
@@ -86,13 +90,44 @@ var FADE_TIME = 150; // ms
     // If the username is valid
     if (!username) {
       username = generateRandom(false,4);
+      init();
+    }else{
+      http("/api/checkUser?name="+username, function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var res = JSON.parse(this.responseText);
+          if(res.result=="ok"){
+            if(username.length==res.key.length){
+              username = generateRandom(false,4);
+            }else{
+              username = username.substring(res.key.length);
+            }
+            // go to private namespace
+            init('/'+res.data);
+            $filesDiv.classList.remove('hide');
+            document.getElementsByName("upload")[0].classList.remove('hide');
+            document.querySelector('input[name=upload]').addEventListener('change',function(){
+              var blob = this.files[0];
+              if(blob){
+                if(blob.size<=50*1024*1024){ // 大于200MB会引起连接断开
+                  socket.emit('file', {file: true, buffer: blob,name:blob.name,type:blob.type});
+                  var $el=document.createElement("li");
+                  var $a = document.createElement("a");
+                  $a.href = "/assets/"+blob.name;
+                  $a.target = "_blank";
+                  $a.innerHTML=blob.name;
+                  $el.append($a);
+                  $filesDiv.querySelector('ul').append($el);
+                }else{
+                  alert('上传文件不超过50MB')
+                }
+              }
+            })
+          }else{
+            init();
+          }
+        }
+      });
     }
-    $loginPage.style.display = "none";
-      $chatPage.style.display = "block";
-      $currentInput.focus();
-
-      // Tell the server your username
-      socket.emit('add user', username);
     }catch(e){
       console.log(e.toString());
     }
@@ -105,8 +140,7 @@ var FADE_TIME = 150; // ms
     // if there is a non-empty message and a socket connection
     if (message && connected) {
       $inputMessage.innerText="";
-      document.getElementsByName("send")[0].classList.remove('hide');
-      document.getElementsByName("send")[1].classList.add('hide');
+      resetInput();
       addChatMessage({
         username: username,
         message: message
@@ -121,7 +155,23 @@ var FADE_TIME = 150; // ms
     var $el=document.createElement("li");
     $el.classList.add("log");
     $el.innerText = message;
-    addMessageElement($el, options);
+    if (!options) {
+      options = {};
+    }
+    if(options.prepend){
+      $logsDiv.prepend($el);
+    }else{
+      $logsDiv.append($el);
+    }
+    // addMessageElement($el, options);
+  }
+
+  // Add a timestamp
+  function timestamp(message){
+    var $el=document.createElement("li");
+    $el.classList.add("log");
+    $el.innerText = message;
+    addMessageElement($el);
   }
 
   // Adds the visual chat message to the message list
@@ -259,8 +309,26 @@ var FADE_TIME = 150; // ms
     var index = Math.abs(hash % COLORS.length);
     return COLORS[index];
   }
-
-  // Keyboard events
+  function addUser(username){
+    var $el=document.createElement("li");
+    $el.innerText = username;
+    $members.append($el);
+  }
+  function removeUser(username){
+    var $els = $members.childNodes;
+    for(var i=0;i<$els.length;i++){
+      if($els[i].innerText==username){
+        $members.removeChild($els[i]);
+        break;
+      }
+    }
+  }
+  function resetInput(){
+    document.getElementsByName("send")[0].classList.remove('hide');
+    if(!$filesDiv.classList.contains('hide'))
+    document.getElementsByName("upload")[0].classList.remove('hide');
+    document.getElementsByName("send")[1].classList.add('hide');
+  }
   document.addEventListener('keydown',function (event) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
@@ -284,8 +352,7 @@ var FADE_TIME = 150; // ms
     socket.emit('stop typing');
     typing = false;
     $currentInput.focus();
-    document.getElementsByName("send")[0].classList.remove('hide');
-    document.getElementsByName("send")[1].classList.add('hide');
+    resetInput();
   },false)
 
   // disable default pulling to refresh
@@ -294,10 +361,10 @@ var FADE_TIME = 150; // ms
   $inputMessage.addEventListener('input', function(e) {
     if(e.target.innerHTML){
       document.getElementsByName("send")[0].classList.add('hide');
+      document.getElementsByName("upload")[0].classList.add('hide');
       document.getElementsByName("send")[1].classList.remove('hide');
     }else{
-      document.getElementsByName("send")[0].classList.remove('hide');
-      document.getElementsByName("send")[1].classList.add('hide');
+      resetInput();
     }
     updateTyping();
   },false);
@@ -317,6 +384,7 @@ var FADE_TIME = 150; // ms
     $inputMessage.focus();
   },false);
 
+  // switch voice input
   document.getElementById("inputType").addEventListener('click',function(){
     var usenode = this.firstElementChild;
     if(usenode.getAttribute('xlink:href').indexOf("radio")!=-1){
@@ -330,58 +398,120 @@ var FADE_TIME = 150; // ms
       $voiceMessage.style.display="none";
     }
   },false);
-  // Socket events
 
-  // Whenever the server emits 'login', log the login message
-  socket.on('login', function (data) {
-    connected = true;
-    // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
-    log(message, {
-      prepend: true
-    });
-    addParticipantsMessage(data);
-  });
-
-  // Whenever the server emits 'new message', update the chat body
-  socket.on('new message', function (data) {
-    addChatMessage(data);
-  });
-
-  // Whenever the server emits 'user joined', log it in the chat body
-  socket.on('user joined', function (data) {
-    log(data.username + ' joined');
-    addParticipantsMessage(data);
-  });
-
-  // Whenever the server emits 'user left', log it in the chat body
-  socket.on('user left', function (data) {
-    log(data.username + ' left');
-    addParticipantsMessage(data);
-    removeChatTyping(data);
-  });
-
-  // Whenever the server emits 'typing', show the typing message
-  socket.on('typing', function (data) {
-    addChatTyping(data);
-  });
-
-  // Whenever the server emits 'stop typing', kill the typing message
-  socket.on('stop typing', function (data) {
-    removeChatTyping(data);
-  });
-
-  socket.on('disconnect', function () {
-    log('you have been disconnected');
-  });
-
-  socket.on('reconnect', function () {
-    log('you have been reconnected');
-    if (username) {
-      socket.emit('add user', username);
+  document.querySelector('svg.menu').addEventListener('click',function(){
+    if($sidePage.offsetWidth==0){
+      $sidePage.style.display = 'flex';
+      $sidePage.style.width = "30%";
+      $chatPage.style.width = "70%";
+    }else{
+      $sidePage.style.display = 'none';
+      $sidePage.style.width = "0";
+      $chatPage.style.width = "100%";
     }
-  });
+  },false)
+  // http function
+  function http(target, readyfunc, xml, method) {
+    var httpObj;
+    if (!method) {method = "GET"; }
+    if (window.XMLHttpRequest) {
+      httpObj = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+      httpObj = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    if (httpObj) {
+      if (readyfunc) {httpObj.onreadystatechange = readyfunc;}
+      httpObj.open(method, target, true);
+      httpObj.send(xml);
+    }
+  };
 
-  socket.on('reconnect_error', function () {
-    log('attempt to reconnect has failed');
-  });
+  function init(namespace){
+    // Socket events
+    if(namespace){
+      socket = io(namespace);
+    }else{
+      socket = io();
+    }
+    // Whenever the server emits 'login', log the login message
+    socket.on('login', function (data) {
+      connected = true;
+      $msgTime = new Date();
+      timestamp($msgTime.toJSON().replace('T',' ').substring(0,19))
+      // Display the welcome message
+      var message = "Welcome to Socket.IO Chat";
+      // Delete duplix users
+      var $els = $members.childNodes;
+      for(var i=0;i<$els.length;i++){
+        var idx = data.users.indexOf($els[i].innerText);
+        if(idx!=-1){
+          data.users.splice(idx,1)
+        }
+      }
+      data.users.forEach(function(it){
+        addUser(it);
+      })
+      log(message, {
+        prepend: true
+      });
+      addParticipantsMessage(data);
+    });
+
+    // Whenever the server emits 'new message', update the chat body
+    socket.on('new message', function (data) {
+      var tm = new Date();
+      if(tm-$msgTime>3600*1000*24){ // show datetime when longer than 1 day
+        timestamp(tm.toJSON().replace('T',' ').substring(0,19));
+      }else if(tm-$msgTime>60*1000*5){ // show time when longer than 5 mins
+        timestamp(tm.toJSON().substring(10,19));
+      }
+      $msgTime = tm;
+      addChatMessage(data);
+    });
+
+    // Whenever the server emits 'user joined', log it in the chat body
+    socket.on('user joined', function (data) {
+      log(data.username + ' joined');
+      addUser(data.username);
+      addParticipantsMessage(data);
+    });
+
+    // Whenever the server emits 'user left', log it in the chat body
+    socket.on('user left', function (data) {
+      log(data.username + ' left');
+      removeUser(data.username);
+      addParticipantsMessage(data);
+      removeChatTyping(data);
+    });
+
+    // Whenever the server emits 'typing', show the typing message
+    socket.on('typing', function (data) {
+      addChatTyping(data);
+    });
+
+    // Whenever the server emits 'stop typing', kill the typing message
+    socket.on('stop typing', function (data) {
+      removeChatTyping(data);
+    });
+
+    socket.on('disconnect', function () {
+      log('you have been disconnected');
+    });
+
+    socket.on('reconnect', function () {
+      log('you have been reconnected');
+      if (username) {
+        socket.emit('add user', username);
+      }
+    });
+
+    socket.on('reconnect_error', function () {
+      log('attempt to reconnect has failed');
+    });
+    
+    $loginPage.style.display = "none";
+    $chatPage.style.display = "block";
+    $currentInput.focus();
+    // Tell the server your username
+    socket.emit('add user', username);
+  }

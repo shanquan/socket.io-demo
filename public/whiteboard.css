@@ -43,3 +43,4 @@ html, body {
 .color.yellow { background-color: yellow; }
 
 .color.current{border:3px solid #ccc;}
+.colors .i{width:48px;height:48px;float:right}

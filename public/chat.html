@@ -8,7 +8,20 @@
 </head>
 <body>
   <ul class="pages">
+    <li class="side page direction-column">
+      <div class="members flex-item"><div class="log">there's 1 participant</div><ul></ul></div>
+      <div class="files flex-item hide"><div class="center">File List(livetime&lt;24Hours)</div><ul></ul></div>
+      <div class="logs flex-item"></div>
+    </li>
     <li class="chat page">
+      <div class="toolbar">
+        <svg class="i">
+          <use xlink:href="#download"></use>
+        </svg>
+        <svg class="i menu">
+          <use xlink:href="#navicon"></use>
+        </svg>
+      </div>
       <div class="chatArea">
         <ul class="messages"></ul>
       </div>
@@ -19,7 +32,8 @@
         </svg>
         <div class="inputMessage" contenteditable="true" placeholder="Type here..."></div>
         <button class="inputMessage" style="display: none;">按住 说话</button>
-        <svg class="icon" name="send">
+        <input class="hide" type="file" name="upload"/>
+        <svg class="icon add" name="send">
           <use xlink:href="#add-circle-outline"></use>
         </svg>
         <svg class="icon hide" name="send">
@@ -65,11 +79,26 @@
           x=64 y=368 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
           x=216 y=368 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect><rect
           x=368 y=368 width=80 height=80 rx=40 ry=40 stroke-miterlimit=10 class="ionicon-fill-none ionicon-stroke-width"></rect></symbol>
-          <symbol id="radio-outline" class=ionicon viewBox="0 0 512 512"><circle cx=256 cy=256.02 r=32></circle><path
+        <symbol id="radio-outline" class=ionicon viewBox="0 0 512 512"><circle cx=256 cy=256.02 r=32></circle><path
             d="M184.25 192.25a96 96 0 000 127.52M327.77 319.77a96 96 0 000-127.52M133.28 141.28a168 168 0 000 229.44M378.72 370.72a168 168 0 000-229.44M435 416a240.34 240.34 0 000-320M77 96a240.34 240.34 0 000 320"
             stroke-linecap=round stroke-linejoin=round class="ionicon-fill-none ionicon-stroke-width"></path></symbol>
-            <symbol id="paper-plane-outline" class=ionicon viewBox="0 0 512 512"><path d="M53.12 199.94l400-151.39a8 8 0 0110.33 10.33l-151.39 400a8 8 0 01-15-.34l-67.4-166.09a16 16 0 00-10.11-10.11L53.46 215a8 8 0 01-.34-15.06zM460 52L227 285"
+        <symbol id="paper-plane-outline" class=ionicon viewBox="0 0 512 512"><path d="M53.12 199.94l400-151.39a8 8 0 0110.33 10.33l-151.39 400a8 8 0 01-15-.34l-67.4-166.09a16 16 0 00-10.11-10.11L53.46 215a8 8 0 01-.34-15.06zM460 52L227 285"
               stroke-linecap=round stroke-linejoin=round class="ionicon-fill-none ionicon-stroke-width"></path></symbol>
+        <symbol id="navicon" class=ionicon viewBox="0 0 512 512"><g>
+          <rect x="96" y="241" width="320" height="32"/>
+          <rect x="96" y="145" width="320" height="32"/>
+          <rect x="96" y="337" width="320" height="32"/>
+        </g></symbol>
+        <symbol id="download" class=ionicon viewBox="0 0 512 512">
+          <g>
+            <g>
+              <polygon points="288,144 288,160 400,160 400,432 112,432 112,160 224,160 224,144 96,144 96,448 416,448 416,144 		"/>
+            </g>
+            <g>
+              <polygon points="193.1,252.3 181.5,263.9 256,338.4 330.5,263.9 318.9,252.3 264.2,307 264.2,64 247.8,64 247.8,307 		"/>
+            </g>
+          </g>
+        </symbol>
     </defs>
     </svg>
 </body>

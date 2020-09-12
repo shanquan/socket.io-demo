@@ -7,6 +7,7 @@
   var colors = document.querySelectorAll("div.color");
   var context = canvas.getContext('2d');
   var colorInput = document.querySelector("input.color");
+  var downloadIcon = document.querySelector(".colors svg");
 
   var current = {
     color: 'black'
@@ -28,13 +29,21 @@
   for (var i = 0; i < colors.length; i++){
     colors[i].addEventListener('click', onColorUpdate, false);
   }
-
+  downloadIcon.addEventListener('click', function(){
+    var base64 = canvas.toDataURL("image/png"); // image/jpeg
+    var a = document.createElement("a");
+    a.download = 'draw-'+getNowFormatDate()+'.png';　　//下载的文件名，默认是'下载'
+    a.href = base64; 
+    document.body.appendChild(a); a.click(); a.remove();
+  }, false);
   socket.on('drawing', onDrawingEvent);
 
   window.addEventListener('resize', onResize, false);
   onResize();
 
-
+  function getNowFormatDate(){
+    return (new Date()).toJSON().replace('T','_').replace(/:/g,'').substring(0,17)
+  }
   function drawLine(x0, y0, x1, y1, color, emit){
     context.beginPath();
     context.moveTo(x0, y0);
