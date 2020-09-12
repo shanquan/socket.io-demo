@@ -93,7 +93,10 @@ nsp.on('connection', socket => {
   socket.on('file', function(data){
     fs.writeFile('./public/assets/'+data.name, data.buffer, function(err) {
       if (err) {
-          throw err;
+          socket.emit('new message', {
+            username: socket.username,
+            message: 'upload Error:'+JSON.stringify(err)
+          });
       }
       var url='http://'+socket.handshake.headers.host+'/assets/'+data.name;
       if(data.type.startsWith('image/')){
