@@ -92,9 +92,10 @@ nsp.on('connection', socket => {
   socket.on('file', function(data){
     fs.writeFile(staticPath+'/assets/'+data.name, data.buffer, function(err) {
       if (err) {
+          // sending to the client only
           socket.emit('new message', {
             username: socket.username,
-            message: 'upload Error:'+JSON.stringify(err)+';'+__dirname
+            message: 'upload Error:'+JSON.stringify(err)
           });
       }
       var url='http://'+socket.handshake.headers.host+'/assets/'+data.name;
@@ -105,7 +106,9 @@ nsp.on('connection', socket => {
       }else if(data.type.startsWith('video/')){
         url = "video:"+url;
       }
-      socket.emit('new message', {
+      // sending to all clients in namespace 'myNamespace', including sender
+      // ref: https://socket.io/docs/emit-cheatsheet/
+      nsp.emit('new message', {
         username: socket.username,
         message: url
       });
