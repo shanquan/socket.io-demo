@@ -108,10 +108,17 @@ nsp.on('connection', socket => {
       }
       // sending to all clients in namespace 'myNamespace', including sender
       // ref: https://socket.io/docs/emit-cheatsheet/
-      nsp.emit('new message', {
-        username: socket.username,
-        message: url
-      });
+      if(data.private){
+        socket.emit('new message', {
+          username: socket.username,
+          message: url
+        });
+      }else{
+        nsp.emit('new message', {
+          username: socket.username,
+          message: url
+        });
+      }
       // saved only for 24 hours, or clear assets dir with fs.rmdir every day at 00:00
       setTimeout(function(){
         fs.unlink(staticPath+'/assets/'+data.name,function(err){

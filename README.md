@@ -32,11 +32,16 @@ The source sample uses express and Jquery, This hasn't. Just dependant on socket
 
 It also supports noname login, image\audio and video links autoplay, barcode-auto generated( with service from [BarcodeTools](http://generator.barcodetools.com/)).
 
-sample input:
+#### sample input:
 - http://www.baidu.com
 - image:https://www.bing.com/th?id=OHR.RhodesIsland_ZH-CN0674840850_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=HpEdgeAn
 - audio:http://
 - video:http://
+
+#### private namespace
+usename start with KEY set in index.js will lead to a private namespace, in this case you can add your name after KEY. In the private namespace you can send files to the server. Notice, the files all have a lifetime of 24 hours, after then they will be deleted by the server.
+
+If you check the private input, then you upload files to the server and you're the only client who can see them.
 
 ### whiteboard
 Add current color style and color input.

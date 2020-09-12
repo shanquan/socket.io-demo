@@ -195,3 +195,4 @@
  .toolbar{position:absolute;right:20px;}
  .center{text-align:center}
  input[type='file']{opacity: 0;width: 40px;height: 48px;position: absolute;right: 0;}
+ .files span{float:right}

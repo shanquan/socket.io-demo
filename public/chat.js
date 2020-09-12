@@ -109,7 +109,7 @@ var FADE_TIME = 150; // ms
               var blob = this.files[0];
               if(blob){
                 if(blob.size<=50*1024*1024){ // 大于200MB会引起连接断开
-                  socket.emit('file', {file: true, buffer: blob,name:blob.name,type:blob.type});
+                  socket.emit('file', {file: true, buffer: blob,name:blob.name,type:blob.type,private:$filesDiv.querySelector('input').checked});
                   var $el=document.createElement("li");
                   var $a = document.createElement("a");
                   $a.href = "/assets/"+blob.name;
