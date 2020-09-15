@@ -18,11 +18,19 @@ exports.types = {
     "wmv": "video/x-ms-wmv",
     "mp3": "audio/mpeg",
     "mp4": "video/mp4",
+    "amr": "audio/amr",
     "xml": "text/xml",
     //"apk": "application/vnd.android.package-archive",
     // download
     "apk": "application/octet-stream",
     "zip": "application/x-zip-compressed",
+    "rar": "application/octet-stream",
     "bin": "application/octet-stream",
+    "docx": "application/octet-stream",
+    "xlsx": "application/octet-stream",
+    "pptx": "application/octet-stream",
+    "doc": "application/octet-stream",
+    "xls": "application/octet-stream",
+    "ppt": "application/octet-stream",
     "unknown": "text/html"
 };
