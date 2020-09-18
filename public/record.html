@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="apple-mobile-web-capable" content="yes">
+    <title>语音转写</title>    
+    <link rel="stylesheet" type="text/css" href="record.css"/>
+</head>
+<body>
+<div id="container">
+    <div id="player">
+        <h1>Voice Robot</h1>        
+        <button id="btn-start-recording" onclick="startRecording();">录音</button>
+        <button id="btn-stop-recording" disabled onclick="stopRecording();">转写</button>
+        <button id="btn-start-palying" disabled onclick="playRecording();">播放</button>                        
+        <div id="inbo">
+            <div id="change"></div>        
+        </div>
+        <input type="hidden" id="audiolength">
+        <div class="progress-bar success">
+            <div class="outer">
+                <div class="inner" style="width:50%"></div>
+            </div>
+        </div>
+        <audio id="audioSave" controls autoplay></audio>
+        <p id="message"></p>
+    </div>    
+</div>
+<script type="text/javascript" src="record.js"></script>
+<script type="text/javascript">
+    //=======================================================================
+    var protocol = window.location.protocol;
+    var baseService = window.location.host;
+    var pathName = window.location.pathname;
+    var projectName = pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+
+    var protocolStr = document.location.protocol;
+    var baseHttpProtocol = "http://";
+    if(protocolStr == "https:") {  
+    baseHttpProtocol = "https://";
+    }
+    var svrUrl =  baseHttpProtocol + baseService + projectName + "/";
+    //=========================================================================
+    
+    var recorder = null;
+    var startButton = document.getElementById('btn-start-recording');
+    var stopButton = document.getElementById('btn-stop-recording');
+    var playButton = document.getElementById('btn-start-palying');
+
+    //var audio = document.querySelector('audio');
+    var audio = document.getElementById('audioSave');
+
+    function startRecording() {
+        if(recorder != null) {
+            recorder.close();
+        }
+        Recorder.get(function (rec) {
+            recorder = rec;
+            recorder.start();
+            stopButton.disabled = false;    
+            playButton.disabled = false;
+        });
+    }
+
+    function stopRecording() {
+        if(!recorder){
+        return false;
+        }
+        recorder.stop();
+    }
+
+    function playRecording() {
+        if(!recorder){
+        return false;
+        }
+        recorder.play(audio);
+    }
+</script>
+</body>
+</html>
