@@ -339,8 +339,9 @@ var FADE_TIME = 150; // ms
       document.getElementsByName("send")[1].classList.remove('hide');
     }else{
       document.getElementsByName("send")[0].classList.remove('hide');
-      document.getElementsByName("upload")[0].classList.remove('hide');
       document.getElementsByName("send")[1].classList.add('hide');
+      if(!$filesDiv.classList.contains('hide'))
+      document.getElementsByName("upload")[0].classList.remove('hide');
     }
   }
   // reset init input status after text message input
@@ -350,6 +351,21 @@ var FADE_TIME = 150; // ms
     if(!$filesDiv.classList.contains('hide'))
     document.getElementsByName("upload")[0].classList.remove('hide');
   }
+  
+  // stop record and send wav file
+  function sendRecord(){
+    if(!recorder){
+      resetInputStatus();
+      return false;
+    }
+    if($timeout){
+      clearTimeout($timeout)
+    }
+    var name=(new Date()).toJSON().replace(/:/g,"").substring(0,17)+"_"+username+".wav";
+    var blob=recorder.getBlob();
+    socket.emit('voice', {file: true, buffer: blob,name:name});
+  }
+
   document.addEventListener('keydown',function (event) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
@@ -430,6 +446,11 @@ var FADE_TIME = 150; // ms
         document.getElementsByName("upload")[0].classList.add('hide');
         document.getElementsByName("send")[0].classList.add('hide');
         document.getElementsByName("send")[1].classList.add('hide');
+      },null,function(errMsg){
+        addChatMessage({
+          username: username,
+          message: errMsg
+        });
       });
       // start timeout
       if($timeout){
@@ -455,19 +476,6 @@ var FADE_TIME = 150; // ms
     resetInputStatus();
   },false)
 
-  // stop record and send wav file
-  function sendRecord(){
-    if(!recorder){
-      resetInputStatus();
-      return false;
-    }
-    if($timeout){
-      clearTimeout($timeout)
-    }
-    var name=(new Date()).toJSON().replace(/:/g,"").substring(0,17)+"_"+username+".wav";
-    var blob=recorder.getBlob();
-    socket.emit('voice', {file: true, buffer: blob,name:name});
-  }
   document.querySelector('svg.menu').addEventListener('click',function(){
     if($sidePage.offsetWidth==0){
       $sidePage.style.display = 'flex';
@@ -479,6 +487,19 @@ var FADE_TIME = 150; // ms
       $chatPage.style.width = "100%";
     }
   },false)
+  
+  document.querySelector('svg.download').addEventListener('click',function(){
+    var str = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no,width=device-width"><title>Chat Log</title></head><body>'
+    str += $messages.parentNode.innerHTML;
+    str += '<style>.messages{font-size:150%;height:100%;margin:0;overflow-y:scroll;padding:10px 20px 10px 20px;}ul{list-style:none;}.username{font-weight:700;overflow:hidden;padding-right:15px;text-align:right;vertical-align:top;}.messageBody{display:inline-block;}.log{color:gray;font-size:70%;margin:5px;text-align:center;}</style></body></html>'
+    var blob = new Blob([str], {type: "text/html"});
+    var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    var link = window.document.createElement('a');
+    link.href = url;
+    link.download = "export.html";
+    link.click();
+  },false)
+  
   // http function
   function http(target, readyfunc, xml, method) {
     var httpObj;

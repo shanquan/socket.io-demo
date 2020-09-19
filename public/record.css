@@ -106,7 +106,7 @@ audio {
   border-radius: 100px;
   line-height: 1;
   white-space: nowrap;
-  transition: width .6s ease;
+  transition: width 60s ease;
 }
 .progress-bar.success .inner{
   background-color: #67c23a;

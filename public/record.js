@@ -29,7 +29,6 @@
       // 创建声音的缓存节点，createScriptProcessor方法的  
       // 第二个和第三个参数指的是输入和输出都是声道数。
       var recorder = context.createScriptProcessor(config.bufferSize, config.channelCount, config.channelCount); 
-       
       //用来储存读出的麦克风数据，和压缩这些数据，将这些数据转换为WAV文件的格式
       var audioData = {  
           size: 0          //录音文件长度  
@@ -156,7 +155,7 @@
       this.start = function (cb) {
           audioInput.connect(recorder);  
           recorder.connect(context.destination);
-          if(cb && typeof cb == Function){
+          if(cb && typeof cb == "function"){
               cb()
           }
       };  
@@ -169,17 +168,27 @@
       //获取音频文件  
       this.getBlob = function (cb) {
           this.stop(); 
-          if(cb && typeof cb == Function){
+          if(cb && typeof cb == "function"){
                 cb(audioData.getFullWavData())
           }else{
             return audioData.getFullWavData();  
           } 
       };  
+      //下载音频文件
+      this.download = function (blob, filename) {
+        var url = (window.URL || window.webkitURL).createObjectURL(blob);
+        var link = window.document.createElement('a');
+        link.href = url;
+        link.download = filename || 'output.wav';
+        var click = document.createEvent("Event");
+        click.initEvent("click", true, true);
+        link.dispatchEvent(click);
+      }
 
       //回放  
       this.play = function (audio,cb) {
           audio.src = window.URL.createObjectURL(this.getBlob());  
-          if(cb && typeof cb == Function){
+          if(cb && typeof cb == "function"){
             audio.onended = cb;
           }
       };  
@@ -233,65 +242,68 @@
           xhr.send(fd);
       };
       
-      var $bo=document.getElementById('inbo');
-      var $change=document.getElementById('change');
     //音频采集  
+    var that = this;
     recorder.onaudioprocess = function (e) {
         audioData.input(e.inputBuffer.getChannelData(0));
         //获取输入和输出的数据缓冲区
         var input = e.inputBuffer.getChannelData(0);
-        if($bo && $change){
-            var width=$bo.offsetWidth;
-            //绘制条形波动图
-            for(i=0;i<width;i++){
-                var changeWidth=width/2*input[input.length*i/width|0];
-                $change.style.width=changeWidth+"%";
-            }
+        if(that.onprocess && typeof that.onprocess == "function"){
+            that.onprocess(e.playbackTime,input);
         }
-        // console.log(e.playbackTime);
     }; 
   };  
   //抛出异常  
   Recorder.throwError = function (message) {
       throw new function () {
           this.toString = function () { return message; };
-          if(document.getElementById("message"))
-          document.getElementById("message").innerText=message
       };  
   };  
   //是否支持录音  
   Recorder.canRecording = (navigator.getUserMedia != null);  
   //获取录音机  
-  Recorder.get = function (callback, config) {  
+  Recorder.get = function (callback,config,errcb) { 
       if (callback) {  
           if (navigator.getUserMedia) {  
               navigator.getUserMedia(  
                   { audio: true } //只启用音频  A
                   , function (stream) {  //stream这个参数是麦克风的输入流，将这个流传递给Recorder
-                      var rec = new Recorder(stream, config);  
+                      var rec = new Recorder(stream, config);
                       callback(rec);  
                   }  
                   , function (error) {  
+                      var errMsg;
                       switch (error.code || error.name) {  
                           case 'PERMISSION_DENIED':  
-                          case 'PermissionDeniedError':  
-                              Recorder.throwError('用户拒绝提供信息。');  
+                          case 'PermissionDeniedError': 
+                              errMsg = "当前浏览器不支持录音功能";
                               break;  
                           case 'NOT_SUPPORTED_ERROR':  
-                          case 'NotSupportedError':  
-                              Recorder.throwError('浏览器不支持硬件设备。');  
+                          case 'NotSupportedError':
+                              errMsg = '浏览器不支持硬件设备'
                               break;  
                           case 'MANDATORY_UNSATISFIED_ERROR':  
                           case 'MandatoryUnsatisfiedError':  
-                              Recorder.throwError('无法发现指定的硬件设备。');  
+                              errMsg = '无法发现指定的硬件设备';  
                               break;  
                           default:  
-                              Recorder.throwError('无法打开麦克风。异常信息:' + (error.code || error.name));  
+                            errMsg = '无法打开麦克风。异常信息:' + (error.code || error.name);  
                               break;  
-                      }  
+                      }
+                      if(errcb && typeof errcb == "function"){
+                        errcb(errMsg)
+                      }else{
+                        Recorder.throwErr(errMsg);
+                      }
                   });  
-          } else {  
-              Recorder.throwErr('当前浏览器不支持录音功能。'); return;  
+          } else { 
+              var errMsg = "当前浏览器不支持录音功能"
+              if(errcb && typeof errcb == "function"){
+                errcb(errMsg)
+              }else{
+                Recorder.throwErr(errMsg);
+              }
+              return;  
           }  
       }  
   };  
