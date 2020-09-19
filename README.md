@@ -22,7 +22,7 @@ Available at <https://socket-io-demos.herokuapp.com/>
 - [x] add datetime and download
 - [x] support private room with a unique password
 - [x] filetransform with websocket only in private namespace and files saved only for 24hours
-- [ ] voice message
+- [x] voice message
 - maybe some webRTC support, or just get research into Rocket.Chat project or Skype
 
 ## Difference

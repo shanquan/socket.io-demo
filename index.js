@@ -197,4 +197,36 @@ function commonChat(socket,tag){
       });
     }
   });
+  // voice
+  socket.on('voice', function(data){
+    fs.writeFile(staticPath+'/assets/'+data.name, data.buffer, function(err) {
+      if (err) {
+          // sending to the client only
+          socket.emit('new message', {
+            username: socket.username,
+            message: 'voice Error:'+JSON.stringify(err)
+          });
+      }
+      var url='audio:http://'+socket.handshake.headers.host+'/assets/'+data.name;
+      if(tag=='default'){
+        io.emit('new message', {
+          username: socket.username,
+          message: url
+        });
+      }else{
+        nsp.emit('new message', {
+          username: socket.username,
+          message: url
+        });
+      }
+      // saved only for 1 hours, or clear assets dir with fs.rmdir every day at 00:00
+      setTimeout(function(){
+        fs.unlink(staticPath+'/assets/'+data.name,function(err){
+          if(err){
+            console.log(err);
+          }
+        })
+      },3600*1000)
+    })
+  });
 }

@@ -223,7 +223,6 @@
           var buffer = audioData.getPureWavData(0);            
           fd.set('wavData', buffer);
           fd.set('wavSize', buffer.size);
-          console.log("wavSize: " + buffer.size);
           var xhr = new XMLHttpRequest();
           xhr.open('POST', url,  false); //async=false,采用同步方式处理       
           xhr.onreadystatechange = function(){
@@ -236,30 +235,29 @@
       
       var $bo=document.getElementById('inbo');
       var $change=document.getElementById('change');
-      var width=$bo.offsetWidth;
-      //音频采集  
-      recorder.onaudioprocess = function (e) {
-          audioData.input(e.inputBuffer.getChannelData(0));
-         //获取输入和输出的数据缓冲区
-         var input = e.inputBuffer.getChannelData(0);
-         //绘制条形波动图
-         for(i=0;i<width;i++){
-            var changeWidth=1000*width/2*input[input.length*i/width|0];
-            $change.style.width=changeWidth+"%";
-         }
-          var timeHidden=document.getElementById('audiolength');
-          timeHidden.Value=e.playbackTime;
-          // console.log(timeHidden.Value);
-          if(timeHidden.Value>=60){
-              recorder.disconnect();  
-              setTimeout(saveAudio(),500);
-          }
-      };  
-
+    //音频采集  
+    recorder.onaudioprocess = function (e) {
+        audioData.input(e.inputBuffer.getChannelData(0));
+        //获取输入和输出的数据缓冲区
+        var input = e.inputBuffer.getChannelData(0);
+        if($bo && $change){
+            var width=$bo.offsetWidth;
+            //绘制条形波动图
+            for(i=0;i<width;i++){
+                var changeWidth=width/2*input[input.length*i/width|0];
+                $change.style.width=changeWidth+"%";
+            }
+        }
+        // console.log(e.playbackTime);
+    }; 
   };  
   //抛出异常  
-  Recorder.throwError = function (message) {  
-      throw new function () { this.toString = function () { return message; };document.getElementById("message").innerText=message};  
+  Recorder.throwError = function (message) {
+      throw new function () {
+          this.toString = function () { return message; };
+          if(document.getElementById("message"))
+          document.getElementById("message").innerText=message
+      };  
   };  
   //是否支持录音  
   Recorder.canRecording = (navigator.getUserMedia != null);  

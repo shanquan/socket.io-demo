@@ -10,7 +10,7 @@ var FADE_TIME = 150; // ms
   var $usernameInput = document.querySelector('.usernameInput'); // Input for username
   var $messages = document.querySelector('.messages'); // Messages area
   var $inputMessage = document.querySelector('div.inputMessage'); // message input box
-  var $voiceMessage = document.querySelector('button.inputMessage');// Voice message button
+  var $voiceProgress = document.querySelector('.progress-bar.voice');// Voice message progress
 
   var $loginPage = document.querySelector('.login.page'); // The login page
   var $chatPage = document.querySelector('.chat.page'); // The chatroom page
@@ -18,6 +18,7 @@ var FADE_TIME = 150; // ms
   var $logsDiv = document.querySelector('.logs');
   var $members = document.querySelector('.members ul');
   var $filesDiv = document.querySelector('.files');
+  var $voicebar = document.querySelector(".progress-bar .inner");
 
   // Prompt for setting a username
   var username;
@@ -28,6 +29,9 @@ var FADE_TIME = 150; // ms
   var $msgTime;
 
   var socket;
+  var recorder = null,$timeout=null,VOICELIMIT=20;// 语音最大时长
+  $voicebar.style.transition="width "+VOICELIMIT+"s";
+  $voicebar.style.webkitTransition="width "+VOICELIMIT+"s";
 
 // Polyfill
   if(!HTMLElement.prototype.append){
@@ -323,11 +327,28 @@ var FADE_TIME = 150; // ms
       }
     }
   }
+  // reset input status from voice
+  function resetInputStatus(){
+    document.getElementById("inputType").firstElementChild.setAttribute('xlink:href','#mic-a');
+    $inputMessage.style.display="";
+    $inputMessage.focus();
+    $voiceProgress.style.display="none";
+    document.getElementById('cancel').classList.add("hide");
+    if($inputMessage.innerHTML){
+      document.getElementsByName("send")[0].classList.add('hide');
+      document.getElementsByName("send")[1].classList.remove('hide');
+    }else{
+      document.getElementsByName("send")[0].classList.remove('hide');
+      document.getElementsByName("upload")[0].classList.remove('hide');
+      document.getElementsByName("send")[1].classList.add('hide');
+    }
+  }
+  // reset init input status after text message input
   function resetInput(){
     document.getElementsByName("send")[0].classList.remove('hide');
+    document.getElementsByName("send")[1].classList.add('hide');
     if(!$filesDiv.classList.contains('hide'))
     document.getElementsByName("upload")[0].classList.remove('hide');
-    document.getElementsByName("send")[1].classList.add('hide');
   }
   document.addEventListener('keydown',function (event) {
     // Auto-focus the current input when a key is typed
@@ -387,18 +408,66 @@ var FADE_TIME = 150; // ms
   // switch voice input
   document.getElementById("inputType").addEventListener('click',function(){
     var usenode = this.firstElementChild;
-    if(usenode.getAttribute('xlink:href').indexOf("radio")!=-1){
-      usenode.setAttribute('xlink:href','#apps-outline');
-      $inputMessage.style.display="none";
-      $voiceMessage.style.display="";
+    if(usenode.getAttribute('xlink:href').indexOf("circle")!=-1){
+      sendRecord();
+      resetInputStatus();
     }else{
-      usenode.setAttribute('xlink:href','#radio-outline');
-      $inputMessage.style.display="";
-      $inputMessage.focus();
-      $voiceMessage.style.display="none";
+      // start record
+      if(recorder != null) {
+          recorder.close();
+      }
+      Recorder.get(function (rec) {
+        recorder = rec;
+        recorder.start();
+        usenode.setAttribute('xlink:href','#circle-filled');
+        $inputMessage.style.display="none";
+        $voiceProgress.style.display="";
+        $voicebar.style.width="0"
+        setTimeout(function(){
+          $voicebar.style.width="100%";
+        },100)
+        document.getElementById('cancel').classList.remove("hide");
+        document.getElementsByName("upload")[0].classList.add('hide');
+        document.getElementsByName("send")[0].classList.add('hide');
+        document.getElementsByName("send")[1].classList.add('hide');
+      });
+      // start timeout
+      if($timeout){
+        clearTimeout($timeout)
+      }
+      $timeout=setTimeout(function(){
+        sendRecord();
+        resetInputStatus();
+      },VOICELIMIT*1000);
     }
   },false);
 
+  // cancel voice
+  document.getElementById('cancel').addEventListener('click',function(){
+    if(!recorder){
+      resetInputStatus();
+      return false;
+    }
+    if($timeout){
+      clearTimeout($timeout)
+    }
+    recorder.stop();
+    resetInputStatus();
+  },false)
+
+  // stop record and send wav file
+  function sendRecord(){
+    if(!recorder){
+      resetInputStatus();
+      return false;
+    }
+    if($timeout){
+      clearTimeout($timeout)
+    }
+    var name=(new Date()).toJSON().replace(/:/g,"").substring(0,17)+"_"+username+".wav";
+    var blob=recorder.getBlob();
+    socket.emit('voice', {file: true, buffer: blob,name:name});
+  }
   document.querySelector('svg.menu').addEventListener('click',function(){
     if($sidePage.offsetWidth==0){
       $sidePage.style.display = 'flex';

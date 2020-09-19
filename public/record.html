@@ -37,7 +37,7 @@
 
     var protocolStr = document.location.protocol;
     var baseHttpProtocol = "http://";
-    if(protocolStr == "https:") {  
+    if(protocolStr == "https:") {
     baseHttpProtocol = "https://";
     }
     var svrUrl =  baseHttpProtocol + baseService + projectName + "/";
@@ -48,7 +48,6 @@
     var stopButton = document.getElementById('btn-stop-recording');
     var playButton = document.getElementById('btn-start-palying');
 
-    //var audio = document.querySelector('audio');
     var audio = document.getElementById('audioSave');
 
     function startRecording() {
@@ -74,7 +73,10 @@
         if(!recorder){
         return false;
         }
-        recorder.play(audio);
+        audio.src = window.URL.createObjectURL(recorder.getBlob()); 
+        audio.onended = function(){
+            console.log('end')
+        };
     }
 </script>
 </body>
