@@ -271,29 +271,11 @@
                       var rec = new Recorder(stream, config);
                       callback(rec);  
                   }  
-                  , function (error) {  
-                      var errMsg;
-                      switch (error.code || error.name) {  
-                          case 'PERMISSION_DENIED':  
-                          case 'PermissionDeniedError': 
-                              errMsg = "当前浏览器不支持录音功能";
-                              break;  
-                          case 'NOT_SUPPORTED_ERROR':  
-                          case 'NotSupportedError':
-                              errMsg = '浏览器不支持硬件设备'
-                              break;  
-                          case 'MANDATORY_UNSATISFIED_ERROR':  
-                          case 'MandatoryUnsatisfiedError':  
-                              errMsg = '无法发现指定的硬件设备';  
-                              break;  
-                          default:  
-                            errMsg = '无法打开麦克风。异常信息:' + (error.code || error.name);  
-                              break;  
-                      }
+                  , function (error) {
                       if(errcb && typeof errcb == "function"){
-                        errcb(errMsg)
+                        errcb("录音失败："+error)
                       }else{
-                        Recorder.throwErr(errMsg);
+                        Recorder.throwErr("录音失败："+error);
                       }
                   });  
           } else { 
