@@ -88,13 +88,34 @@ var FADE_TIME = 150; // ms
       // Tell the server your username
       socket.emit('add user', username);
   }
-
+   // reveal special codes in str
+  function reveal(str){
+    let reg = /[\u0000-\u001F]/;
+    let result;
+    do{
+      result = str.match(reg);
+      if(null!=result && 0!=result.length){
+          let nstr = result[0].charCodeAt();
+          nstr = nstr.toString(16);
+          if(nstr.length<4){
+              let arr = [];
+              while(arr.length<4 - nstr.length)
+              arr.unshift('0')
+              nstr = arr.join('')+nstr;
+          }
+          nstr = "\\u" + nstr;
+          str = str.replace(reg,nstr);
+      }
+    }while(null!=result && 0!=result.length)
+    return str;
+  }
   // Sends a chat message
   function sendMessage () {
     var message = $inputMessage.value;
     // Prevent markup from being injected into the message
     // if there is a non-empty message and a socket connection
     if (message && connected) {
+      message = reveal(message);
       $inputMessage.value="";
       addChatMessage({
         username: username,
