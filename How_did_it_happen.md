@@ -6,6 +6,7 @@ whiteboard，中文白板，通俗意义就是一个可以协作的简单在线�
 
 ![I'm Boring](https://user-images.githubusercontent.com/8649688/123745176-76118400-d8e2-11eb-80e9-897622b0e351.jpg)
 
+
 <video controls="" preload="none" width="320"><source src="https://user-images.githubusercontent.com/8649688/123745412-d99bb180-d8e2-11eb-982d-088bf42104b9.mp4" type="video/mp4"></video>
 
 无意中我随手画了三笔，如下图下方的三个黑色线条，然后过了一会儿，我看见有人用红色画出了一副眼镜，3秒后我又在上方补了一条黑色的镜框。过了几分钟，我看见红色线条画出了一个鼻子和嘴巴😄。过了许久没有看到新的线条出现，于是我截图并关掉了网页。
